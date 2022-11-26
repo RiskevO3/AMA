@@ -27,33 +27,5 @@
   $temp.remove();
   toastr.success('link tercopy!')
 };
-const createCards = (obj) => {
-      const row_i = document.getElementById('cards');
-      const firstClass = document.getElementsByClassName("col-sm-6 mb-3")[0];
-      const mainDiv = document.createElement('div');
-      mainDiv.classList.add('col-sm-6', 'mb-3','text-white');
-      const secondDiv = document.createElement('div');
-      secondDiv.classList.add('card',obj['bg-color']);
-      const thirdDiv = document.createElement('div');
-      thirdDiv.classList.add('card-body');
-      const name = document.createElement('h5');
-      name.classList.add('card-title');
-      name.innerHTML = obj.name;
-      const message = document.createElement('p');
-      message.classList.add('card-text');
-      message.innerHTML = obj.message;
-      thirdDiv.appendChild(name);
-      thirdDiv.appendChild(message);
-      secondDiv.appendChild(thirdDiv);
-      mainDiv.appendChild(secondDiv);
-      row_i.insertBefore(mainDiv, firstClass);
-    };
-  $(document).ready(function(){
-    let socket = io.connect('http://' + document.domain + ':' + location.port)
-    socket.on('{{current_user.username}}',function(msg){
-      console.log(msg)
-      createCards(msg)
-    })
-  })
 </script>
 {%endblock%}

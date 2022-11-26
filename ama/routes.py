@@ -75,7 +75,7 @@ def send_message_page(username):
             user.messages.append(message)
             db.session.add_all([user,message])
             db.session.commit()
-            socketio.emit(username,{'name':message.name,'message':message.message,'bg-color':message.bg_color})
+            socketio.emit(f'{username}',{'name':message.name,'message':message.message,'bg_color':message.bg_color})
             return('pesan anda sudah terkirim!',200)
         if form.errors != {}:
             l_err = []
@@ -87,3 +87,5 @@ def send_message_page(username):
     if 'url' in session:
         return redirect(session['url'])
     return redirect(url_for('home_page'))
+
+

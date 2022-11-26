@@ -49,7 +49,7 @@
         success: function(data){
           toastr.success(`${data} you will be redirect in 1.5 seconds.`)
           setTimeout(function(){
-            window.location.replace('{{url_for("user_page")}}')
+            window.location.replace('{{url_for("user_page",_scheme="http")}}')
           },1500)
         },
         error: function(xhr){
