@@ -1,0 +1,80 @@
+{%extends 'index.html'%}
+{%block title%}Send messages to {{user.username}}{%endblock%}
+{%block content%}
+<body class="text-center">
+    <section id="header" class="jumbotron text-center bg-dark text-white">
+        <h1 class="display-3">Hallowww!</h1>
+        <p class="lead">Isi pesan yang ingin kamu kirimkan ke {{user.username}} dibawah ini yaaa!.</p>
+    </section>
+    <section class="vh-100">
+        <div class="container">
+          <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+              <div class="card bg-dark text-white" style="border-radius: 1rem;">
+                <div class="card-body p-5 text-center">
+                  <div class="mb-md-5 mt-md-4 pb-5">
+                    <form method="POST" id="form">
+                        {{form.hidden_tag()}}
+                        <div class="form-outline form-white mb-4">
+                            <label class="form-label" for="typeEmailX">NAMA</label>
+                            <div class="input-group">
+                            {{form.name(class='form-control form-control-lg',id='name',type='text')}}
+                            <button onclick="setAnon('name')" class="btn btn-outline-light" type="button">Be anonymous</button>
+                            </div>
+                        </div>
+                        <div class="form-outline form-white mb-4">
+                          <label class="form-label" for="typePasswordX">PESAN</label>
+                          {{form.message(class='form-control form-control-lg',id='message')}}
+                        </div>
+                            <!-- <p class="small mb-5 pb-lg-2"><a class="text-white-50" href="#!">Forgot password?</a></p> -->
+                        {{form.submit(class='btn btn-outline-light btn-lg px-5',type='submit',value='Send')}}
+                    </form>
+                  </div>
+                  <div>
+                    <p class="mb-0">Don't have an account? <a href="{{url_for('register_page')}}" class="text-white-50 fw-bold">Sign Up</a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+</body>
+{%endblock%}
+{%block script%}
+<script>
+    const setAnon = (element) => {
+        document.getElementById(element).value='anonymous'
+        toastr.success('success')
+    };
+    $(document).ready(function(){
+        $('#form').submit(function(e){
+            e.preventDefault();
+            let url = '{{url_for("send_message_page",username=user.username)}}'
+            $.ajax({
+                method:'POST',
+                url:url,
+                data: $('#form').serialize(),
+                success: function(data){
+                    toastr.success(data)
+                    document.getElementById('form').reset()
+                },
+                error: function(xhr){
+                    data = xhr.responseJSON
+                    for(let err in data){
+                        toastr.error(data)
+                    }
+                }
+            })
+        });
+        $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
+            }
+        }
+        })
+    })
+</script>
+{%endblock%}

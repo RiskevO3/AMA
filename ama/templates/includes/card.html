@@ -1,0 +1,18 @@
+{% for message in current_user.messages %}
+<div class="col-sm-6 mb-3 text-white">
+  <div class="card {{message.bg_color}}">
+    <div class="card-body">
+      <h5 class="card-title">{{message.name}}</h5>
+      <p class="card-text">{{message.message}}</p>
+    </div>
+  </div>
+</div>
+{% endfor %}
+<script>
+    $(document).ready(function(msg) {
+            let socket = io.connect('http://' + document.domain + ':' + location.port);
+            socket.on('my_response', function(msg) {
+              createElements(msg)
+              console.log(msg)
+            });})
+    </script>

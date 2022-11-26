@@ -1,0 +1,59 @@
+{% extends 'index.html' %}
+{% block title %}
+{{current_user.username}} messages page ✉️
+{% endblock %}
+{% block content %}
+   <section id="header" class="jumbotron text-center bg-dark text-white">
+     <h1 class="display-3">Selamat Datang {{current_user.username}}!</h1>
+     <p class="lead">Dibawah ini adalah pesan yang masuk untuk kamu.</p>
+     <p>Copy link berikut untuk menerima pesan: </p>
+     <button class="btn btn-primary" onclick="copyToClipboard('#user_link')"><a id="user_link"></a></button>
+</section>
+<br><br>
+<div class="container">
+  <div id = 'cards' class="row">
+  {% include 'includes/card.html' %}
+ </div>
+</div>
+{% endblock %}
+{%block script%}
+<script>
+  document.getElementById('user_link').innerHTML = `${document.location.origin}/send/{{current_user.username}}`
+  const copyToClipboard = (element) => {
+  let $temp = $("<input>");
+  $("body").append($temp);
+  $temp.val($(element).text()).select();
+  document.execCommand("copy");
+  $temp.remove();
+  toastr.success('link tercopy!')
+};
+const createCards = (obj) => {
+      const row_i = document.getElementById('cards');
+      const firstClass = document.getElementsByClassName("col-sm-6 mb-3")[0];
+      const mainDiv = document.createElement('div');
+      mainDiv.classList.add('col-sm-6', 'mb-3','text-white');
+      const secondDiv = document.createElement('div');
+      secondDiv.classList.add('card',obj['bg-color']);
+      const thirdDiv = document.createElement('div');
+      thirdDiv.classList.add('card-body');
+      const name = document.createElement('h5');
+      name.classList.add('card-title');
+      name.innerHTML = obj.name;
+      const message = document.createElement('p');
+      message.classList.add('card-text');
+      message.innerHTML = obj.message;
+      thirdDiv.appendChild(name);
+      thirdDiv.appendChild(message);
+      secondDiv.appendChild(thirdDiv);
+      mainDiv.appendChild(secondDiv);
+      row_i.insertBefore(mainDiv, firstClass);
+    };
+  $(document).ready(function(){
+    let socket = io.connect('http://' + document.domain + ':' + location.port)
+    socket.on('{{current_user.username}}',function(msg){
+      console.log(msg)
+      createCards(msg)
+    })
+  })
+</script>
+{%endblock%}
