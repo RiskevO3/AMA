@@ -38,7 +38,7 @@
 {%block title%}Login Page{%endblock%}
 {%block script%}
 <script>
-  $(document).ready(function(){
+$(document).ready(function(){
     $('form').submit(function(e){
       let url = '{{url_for("login_page")}}'
       e.preventDefault()
@@ -49,12 +49,14 @@
         success: function(data){
           toastr.success(`${data} you will be redirect in 1.5 seconds.`)
           setTimeout(function(){
-            window.location.replace('{{url_for("user_page",_scheme="http")}}')
+            window.location.replace('{{url_for("user_page")}}')
           },1500)
         },
         error: function(xhr){
-          data = xhr.responseText
-          toastr.error(data)
+          datal = xhr.responseJSON
+          for(let data in datal){
+            toastr.error(datal[data])
+          }
         }
       })
     });

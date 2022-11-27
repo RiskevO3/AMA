@@ -1,0 +1,110 @@
+{%extends 'index.html'%}
+{%block title%}Search User{%endblock%}
+{%block css%}
+<link rel="stylesheet" href="{{url_for('static',filename='css/search.css')}}">{%endblock%}
+{%block content%}
+<br><br>
+<div class="content" style="background-color: black;">
+    <div class="container text-white">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="bg-dark search-result-box card-box">
+                    <div class="row">
+                        <div class="col-md-8 offset-md-2">
+                            <div class="pt-3 pb-4">
+                                <div class="input-group">
+                                    <input type="text" id="searchresult" class="form-control" placeholder="Insert username that u search here!">
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-primary waves-effect waves-light" onclick="generateUsername('searchresult')"><i class="fa fa-search mr-1"></i> Search</button>
+                                    </div>
+                                </div>
+                                <div class="mt-4 text-center">
+                                    <h4 id="searchresultinfo"></h4></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end row -->
+                    <ul class="nav nav-tabs tabs-bordered">
+                        <li class="nav-item"><a href="#home" data-toggle="tab" aria-expanded="true" class="nav-link active">Users<span class="badge badge-success ml-1">325</span></a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="home">
+                            <div class="row">
+                                <div class="col-md-12" id="searchCard">
+                                    <!-- <ul class="pagination justify-content-end pagination-split mt-0">
+                                        <li class="page-item"><a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">«</span> <span class="sr-only">Previous</span></a></li>
+                                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item active"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">4</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">5</a></li>
+                                        <li class="page-item"><a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">»</span> <span class="sr-only">Next</span></a></li>
+                                    </ul> -->
+                                    <!-- <div class="clearfix"></div> -->
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end All results tab -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end row -->
+    </div>
+    <!-- container -->
+</div>
+{%endblock%}
+{%block script%}
+<script>
+const createSearchResult = (obj) => {
+    const row_i = document.getElementById('searchCard');
+    const firstClass = document.getElementsByClassName("search-item")[0];
+    const mainDiv = document.createElement('div');
+    mainDiv.classList.add('search-item');
+    const title = document.createElement('h4');
+    title.classList.add('mb-1');
+    const linkToUser = document.createElement('a');
+    linkToUser.href = `http://127.0.0.1:5000/send/${obj.username}`
+    linkToUser.target = '_blank'
+    linkToUser.innerHTML = `${obj.username} pages`
+    const secondDiv = document.createElement('div');
+    secondDiv.classList.add('font-13','text-success','mb-3');
+    secondDiv.innerHTML = `http:127.0.0.1/send/${obj.username}`;
+    const description = document.createElement('p');
+    description.classList.add('mb-0','text-muted');
+    description.innerHTML = `This is a page for ${obj.username} Message page`
+    title.appendChild(linkToUser);
+    mainDiv.appendChild(title);
+    mainDiv.appendChild(secondDiv);
+    mainDiv.appendChild(description)
+    row_i.append(mainDiv);
+  };
+    const generateUsername = (element) =>{
+        let username = document.getElementById(element).value
+        if(username != ''){
+            let divCard = document.getElementById('searchCard')
+            let url = '{{url_for("search_user")}}'
+            $.ajax({
+                method:'POST',
+                url:url,
+                data: {'username':`${username}%`},
+                success: function(data){
+                    toastr.success('username found!, here is the list of username.')
+                    document.getElementById('searchresultinfo').innerHTML = `Search Results For "${username}"`
+                    divCard.innerHTML = ''
+                    for (let i in data){
+                        createSearchResult(data[i])
+                    }
+                },
+                error: function(xhr){
+                    divCard.innerHTML = ''
+                    toastr.error(xhr.responseText)
+
+                }
+            })
+        }else{
+            toastr.error('please fill the username!')
+        }
+    }
+</script>
+{%endblock%}

@@ -1,9 +1,13 @@
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm,RecaptchaField
 from wtforms import SubmitField,StringField,PasswordField,TextAreaField
 from wtforms.validators import Length,DataRequired,ValidationError,Email,EqualTo
 from ama.models import User
 
 class LoginForm(FlaskForm):
+    def validate_username(self,username_to_check):
+        username = User.query.filter_by(username=username_to_check.data).first()
+        if not username:
+            raise ValidationError('Username tidak terdaftar!, silahkan coba username lain.')
     username = StringField(label='User Name:', validators=[DataRequired()])
     password = PasswordField(label='Password:', validators=[DataRequired()])
     submit = SubmitField(label='Login')

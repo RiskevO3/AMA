@@ -13,7 +13,7 @@ def validate_login(username,password):
     if attemptedUser and attemptedUser.check_password_correction(attempted_password=password):
         login_user(attemptedUser)
         return(f"Selamat datang {attemptedUser.username}!", 200)
-    return('Username atau password salah!, harap coba kembali.', 400)
+    return(['Username atau password salah!, harap coba kembali.'], 400)
 
 def generate_bgcolor():
     last_user_bg = Message.query.filter().order_by(Message.id.desc()).first().bg_color
@@ -42,6 +42,9 @@ class User(db.Model,UserMixin):
         self.password_hash = bcrypt.generate_password_hash(plain_text_password).decode('utf-8')
     def check_password_correction(self, attempted_password): #function to check password when user try to login.
         return bcrypt.check_password_hash(self.password_hash, attempted_password)
+    
+    def to_dict(self):
+        return {'username':self.username,'email':self.email}
 
 class Message(db.Model):
     id = db.Column(db.Integer(),primary_key=True)

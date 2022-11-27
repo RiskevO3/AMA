@@ -1,7 +1,7 @@
 from flask import redirect,render_template,url_for,flash,request,session
 from ama import app,socketio
 from ama.models import db,User,Message,generate_bgcolor,validate_login
-from ama.forms import LoginForm,MessageForm,RegisterForm
+from ama.forms import LoginForm,MessageForm,RegisterForm,SubmitField
 from flask_login import login_user,logout_user,login_required,current_user
 
 @app.errorhandler(404)
@@ -23,6 +23,14 @@ def login_page():
         form = LoginForm()
         if form.validate_on_submit():
             return validate_login(username=form.username.data,password=form.password.data)
+        if form.errors != {}:
+            l_err = []
+            for err_msg in form.errors.values():
+                if err_msg[0] == "The response parameter is missing.":
+                    l_err.append('Please Verify the captcha!')
+                else:
+                    l_err.append(err_msg[0])
+            return (l_err,400)
         return render_template('login.html',form=form)
     flash(f'user is logged in as {current_user.username}.',category='info')
     if 'url' in session:
@@ -89,3 +97,16 @@ def send_message_page(username):
     return redirect(url_for('home_page'))
 
 
+@app.route('/search',methods=['POST','GET'])
+def search_user():
+    session['url'] = url_for('search_user')
+    if request.method == 'POST':
+        username = request.form.get('username')
+        if username != '' or username[0] == '%':
+            searchUsername = User.query.filter(User.username.like(username)).all()
+            if searchUsername:
+                l_user = [user.to_dict() for user in searchUsername]
+                return(l_user,200)
+            return('username tidak ditemukan!',400)
+        return('u cant search like this!',400)
+    return render_template('search.html')
